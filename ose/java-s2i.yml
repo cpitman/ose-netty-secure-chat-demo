@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ImageStream
+metadata:
+  name: java
+spec:
+  tags:
+  - name: latest
+    annotations:
+      description: S2I Builder Image for plain Java applications
+      iconClass: icon-java
+      tags: "builder,java"
+      supports: java
+    from:
+      kind: DockerImage
+      name: fabric8/s2i-java:latest
