@@ -39,6 +39,12 @@ of the deployed route. Then execute the following to test it (replacing
 openssl s_client -servername $HOSTNAME -connect $HOSTNAME:443
 ```
 
+For example:
+
+```
+openssl s_client -servername chat-test-chat2.rhel-cdk.10.1.2.2.xip.io -connect chat-test-chat2.rhel-cdk.10.1.2.2.xip.io:443
+```
+
 Once connected to the app, you can the send a message by enter a line of text 
 and pressing `Enter`. Multipl eusers can login at the same time using the same
 command and then send messages to each other.
