@@ -30,7 +30,6 @@ objects:
     resources: {}
     source:
       git:
-        ref: s2i
         uri: https://github.com/cpitman/ose-netty-secure-chat-demo.git
       type: Git
     strategy:
