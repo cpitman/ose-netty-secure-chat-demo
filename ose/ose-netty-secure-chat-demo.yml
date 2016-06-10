@@ -1,0 +1,141 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    creationTimestamp: null
+    generation: 1
+    labels:
+      app: ose-netty-secure-chat-demo
+    name: ose-netty-secure-chat-demo
+  spec:
+    tags:
+    - from:
+        kind: DockerImage
+        name: 172.30.1.188:5000/sample-project/ose-netty-secure-chat-demo:latest
+      name: latest
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ose-netty-secure-chat-demo
+    name: ose-netty-secure-chat-demo
+  spec:
+    replicas: 1
+    selector:
+      app: ose-netty-secure-chat-demo
+      deploymentconfig: ose-netty-secure-chat-demo
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: ose-netty-secure-chat-demo
+          deploymentconfig: ose-netty-secure-chat-demo
+      spec:
+        containers:
+        - image: 172.30.1.188:5000/sample-project/ose-netty-secure-chat-demo@sha256:178b31f5c4fbecc3195a36ba7f51658adfdb775295e3db61ace86e6231c4c32c
+          imagePullPolicy: Always
+          name: ose-netty-secure-chat-demo
+          ports:
+          - containerPort: 8992
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ose-netty-secure-chat-demo
+        from:
+          kind: ImageStreamTag
+          name: ose-netty-secure-chat-demo:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ose-netty-secure-chat-demo
+    name: ose-netty-secure-chat-demo
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ose-netty-secure-chat-demo:latest
+    resources: {}
+    source:
+      git:
+        uri: https://github.com/cpitman/ose-netty-secure-chat-demo
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: DockerImage
+          name: registry.access.redhat.com/library/rhel7:latest
+      type: Docker
+    triggers:
+    - github:
+        secret: NCmFi8vsnp0lgwbbqIb5
+      type: GitHub
+    - generic:
+        secret: N5ro-BR_EOnzDPFboHDz
+      type: Generic
+    - type: ConfigChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ose-netty-secure-chat-demo
+    name: ose-netty-secure-chat-de
+  spec:
+    ports:
+    - name: 8992-tcp
+      port: 8992
+      protocol: TCP
+      targetPort: 8992
+    selector:
+      app: ose-netty-secure-chat-demo
+      deploymentconfig: ose-netty-secure-chat-demo
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ose-netty-secure-chat-demo
+    name: ose-netty-secure-chat-de
+  spec:
+    port:
+      targetPort: 8992-tcp
+    tls:
+      termination: passthrough
+    to:
+      kind: Service
+      name: ose-netty-secure-chat-de
+  status: {}
+kind: List
+metadata: {}
